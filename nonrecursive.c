@@ -6,17 +6,16 @@
 /*   By: mlaneyri <mlaneyri@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/04 20:42:29 by mlaneyri          #+#    #+#             */
-/*   Updated: 2023/07/06 17:55:01 by mlaneyri         ###   ########.fr       */
+/*   Updated: 2023/07/06 22:31:19 by lnr              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./mazegen.h"
 
-void floodfill_id(t_maze * mz, int x, int * ids, int id) {
-	ids[x] = id;
-	for (int move = MV_N; move <= MV_W; ++move)
-		if (move_possible(mz, x, move) && ids[move_box(mz, x, move)] != id)
-			 floodfill_id(mz, move_box(mz, x, move), ids, id);
+void floodfill_id(t_maze * mz, int to_replace, int * ids, int replace_with) {
+	for (int x = 0; x < mz->w * mz->h; ++x)
+		if (ids[x] == to_replace)
+			ids[x] = replace_with;
 }
 
 int open_door_possible_nonr(t_maze * mz, int * id, int x, int mv) {
@@ -56,9 +55,11 @@ void maze_gen_nonr(t_maze * mz) {
 	for (int i = 0; i < mz->w * mz->h; ++i)
 		id[i] = i;
 	for (int i = 0; i < mz->w * mz->h - 1; ++i) {
+		//maze_display(mz);
+		//usleep(10000);
 		while (!(mv = next_door_nonr(mz, id, (x = rand() % (mz->w * mz->h)))))
 			;
-		floodfill_id(mz, move_box(mz, x, mv), id, id[x]);
+		floodfill_id(mz, id[move_box(mz, x, mv)], id, id[x]);
 		open_door(mz, x, mv);
 	}
 	free(id);

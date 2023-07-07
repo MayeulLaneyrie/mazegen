@@ -6,7 +6,7 @@
 /*   By: mlaneyri <mlaneyri@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/04 20:42:29 by mlaneyri          #+#    #+#             */
-/*   Updated: 2023/07/06 19:05:07 by mlaneyri         ###   ########.fr       */
+/*   Updated: 2023/07/07 15:55:53 by lnr              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,31 +21,31 @@ unsigned long long get_time_us(void)
 }
 
 int maze_display(t_maze * mz) {
-	printf("\e[H");
-	printf("\e[2m");
+	int mark;
+
+
+	printf("\e[H\e[34;2m");
 	for (int x = 0; x < 2 * mz->w + 1; ++x)
 		printf("▄");
 	printf("\r\n");
 	for (int i = 0; i < mz->w * mz->h; ++i) {
 			if (!(i % mz->w))
 				printf("█");
-			if (mz->grid[i] & MARK_X)
-				printf("\e[4%dm", (mz->grid[i] & MARK_X) >> 4);
+			mark = (mz->grid[i] & MARK_X) >> 4;
 			if ((mz->grid[i] & DOOR_E) && (mz->grid[i] & DOOR_S))
-				printf(" ▄");
+				printf((mark ? "\e[22;36m▀\e[2;34m▄" : " ▄"));
 			else if (mz->grid[i] & DOOR_E)
-				printf("▄▄");
+				printf((mark ? "\e[46m▄\e[49m▄" : "▄▄"));
 			else if (mz->grid[i] & DOOR_S)
-				printf(" █");
+				printf((mark ? "\e[22;36m▀\e[2;34m█" : " █"));
 			else if (move_possible(mz, i, MV_N) || move_possible(mz, i, MV_W))
-				printf("▄█");
+				printf((mark ? "\e[46m▄\e[49m█" : "▄█"));
 			else
 				printf("██");
-			printf("\e[0;2m");
 			if (i % mz->w + 1 == mz->w)
 				printf("\r\n");
 	}
-	printf("\e[0m\e[H");
+	printf("\e[0m");
 	return (0);
 }
 

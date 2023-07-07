@@ -6,7 +6,7 @@
 /*   By: mlaneyri <mlaneyri@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/04 20:42:29 by mlaneyri          #+#    #+#             */
-/*   Updated: 2023/07/06 17:57:10 by mlaneyri         ###   ########.fr       */
+/*   Updated: 2023/07/07 01:22:59 by lnr              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,12 +43,21 @@ int next_door(t_maze * mz, int x) {
 
 void maze_gen_r(t_maze * mz, int x) {
 	int mv;
+	int * stack = malloc(mz->w * mz->h * sizeof(int));
+	int ptr = 0;
 
-	maze_display(mz);
-	usleep(10000);
+	stack[0] = x;
 	mz->grid[x] |= EXPLORD;
-	while ((mv = next_door(mz, x))) {
-		open_door(mz, x, mv);
-		maze_gen_r(mz, move_box(mz, x, mv));
+	while (ptr >= 0) {
+		if ((mv = next_door(mz, stack[ptr]))) {
+			open_door(mz, stack[ptr], mv);
+			++ptr;
+			maze_display(mz);
+			usleep(5000);
+			stack[ptr] = move_box(mz, stack[ptr - 1], mv);
+			mz->grid[stack[ptr]] |= EXPLORD;
+		}
+		else
+			--ptr;
 	}
 }
